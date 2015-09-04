@@ -68,6 +68,7 @@ zwave.on('value removed', function(nodeid, comclass, index) {
 
 zwave.on('node ready', function(nodeid, nodeinfo) {
 	console.log('=========== NodeID: %d ===========', nodeid);
+	//console.log(nodes[nodeid]);
 	nodes[nodeid]['manufacturer'] = nodeinfo.manufacturer;
 	nodes[nodeid]['manufacturerid'] = nodeinfo.manufacturerid;
 	nodes[nodeid]['product'] = nodeinfo.product;
@@ -103,6 +104,10 @@ zwave.on('node ready', function(nodeid, nodeinfo) {
 	}
 
 	// WRITE THE NODE# DATA TO FILE HERE
+	//console.log('=== node info ===');
+	//console.log(nodeinfo);
+	//console.log('=== end info ===');
+	write_nodeinfo_file(nodes[nodeid], nodeinfo, nodeid);
 
 });
 
@@ -135,6 +140,22 @@ zwave.on('notification', function(nodeid, notif) {
 zwave.on('scan complete', function() {
 	console.log('scan complete, hit ^C to finish.');
 });
+
+var write_nodeinfo_file = function(node, nodeinfo, id) {
+	// if (node != null && 
+	//	node["type"] != "Static PC Controller")
+
+	fs.appendFile('deviceDetails.json', '- '+JSON.stringify(nodeinfo)+"\n", function(err) {
+		if (err) throw err;
+		console.log('NodeInfo saved to file.');
+	});
+	fs.appendFile('deviceDetails.json', JSON.stringify(node)+"\n", function(err){
+		if (err) throw err;
+		console.log('Info saved to file.');
+	});
+
+};
+
 
 zwave.connect();
 

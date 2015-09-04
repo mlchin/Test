@@ -2,7 +2,8 @@
  * OpenZWave Home Server.
  */
 
-ZSTICK_PORT = process.argv[2] || '/dev/ttyACM0'
+isFirstTime = true;
+ZSTICK_PORT = process.argv[2] || '/dev/ttyACM0';
 
 var OpenZWave = require('openzwave');
 var fs = require('fs');
@@ -143,17 +144,28 @@ zwave.on('scan complete', function() {
 
 var write_nodeinfo_file = function(node, nodeinfo, id) {
 	// if (node != null && 
-	//	node["type"] != "Static PC Controller")
+    //	node["type"] != "Static PC Controller")
 
-	fs.appendFile('deviceDetails.json', '- '+JSON.stringify(nodeinfo)+"\n", function(err) {
-		if (err) throw err;
-		console.log('NodeInfo saved to file.');
-	});
-	fs.appendFile('deviceDetails.json', JSON.stringify(node)+"\n", function(err){
-		if (err) throw err;
-		console.log('Info saved to file.');
-	});
-
+    if (isFirstTime) {
+        fs.writeFile('deviceDetails.json', '- '+JSON.stringify(nodeinfo)+"\n", function(err) {
+            if (err) throw err;
+            console.log('NodeInfo saved to file.');
+        });
+        fs.appendFile('deviceDetails.json', JSON.stringify(node)+"\n", function(err){
+            console.log('Info saved to file.');
+        });
+        isFirstTime = false;
+    }
+    else {
+        fs.appendFile('deviceDetails.json', '- '+JSON.stringify(nodeinfo)+"\n", function(err) {
+            if (err) throw err;
+            console.log('NodeInfo saved to file.');
+        });
+        fs.appendFile('deviceDetails.json', JSON.stringify(node)+"\n", function(err){
+            if (err) throw err;
+            console.log('Info saved to file.');
+        });
+    }
 };
 
 
